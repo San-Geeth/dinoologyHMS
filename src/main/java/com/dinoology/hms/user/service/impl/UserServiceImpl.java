@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> addUser(HttpServletRequest request, HttpServletResponse response, User user) {
-        logger.info(request.getRequestURI());
+        logger.info("Request URI: {}", request.getRequestURI());
         try {
             // TODO: If 'isExternal' is false:
             // 1. Fetch the associated Staff member details using the provided user information.
@@ -64,24 +65,32 @@ public class UserServiceImpl implements UserService {
                     newUser.setStaffMember(staffMember);
                     return getUserResponse(newUser);
                 } else {
+                    logger.info("Avoiding adding user for id: {}, staff member not found!", user.getStaffMemberId());
                     return ResponseEntity.status(HttpStatus.CONFLICT)
                             .body(new ResponseWrapper<>().responseFail(UserConstants.STAFF_MEMBER_FOR_USER_NOT_FOUND));
                 }
             } else {
                 return getUserResponse(user);
             }
+        } catch (DataAccessException e) {
+            logger.error("Database error while adding staff member: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
         }
     }
 
     private ResponseEntity<?> getUserResponse(User user) {
         if(userRepository.existsByUsername(user.getUsername())) {
+            logger.info("Avoiding adding user: {}, user already exists!", user.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseWrapper<>().responseFail(UserConstants.USERNAME_FOUND));
         } else {
             userRepository.save(user);
+            logger.info("User Added Successfully: {}", user);
             return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.USER_ADDED_SUCCESSFULLY));
         }
     }
