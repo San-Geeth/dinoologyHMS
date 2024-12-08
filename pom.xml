@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>hms</name>
-	<description>HMS powered by Dinoology</description>
+	<description>HMS powered by ©Dinoology</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -28,7 +28,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>23</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -41,8 +41,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
