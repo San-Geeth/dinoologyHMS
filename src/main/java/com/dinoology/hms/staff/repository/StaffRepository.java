@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StaffRepository extends JpaRepository<StaffMember, Integer> {
     boolean existsByNic(String nic);
+    boolean existsByEmail(String email);
 }

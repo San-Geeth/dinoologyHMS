@@ -1,5 +1,6 @@
 package com.dinoology.hms.user.model;
 
+import com.dinoology.hms.staff.model.StaffMember;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(unique = true)
+    private String userEmail;
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
@@ -31,15 +34,24 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_member_id", referencedColumnName = "id")
+    private StaffMember staffMember;
+
+    @Transient
+    private Integer staffMemberId;
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", userEmail='" + userEmail + '\'' +
                 ", username='" + username + '\'' +
                 ", isExternal=" + isExternal +
                 ", isActive=" + isActive +
                 ", createdAt=" + createdAt +
+                ", staffMember=" + staffMember +
+                ", staffMemberId=" + staffMemberId +
                 '}';
     }
 }
