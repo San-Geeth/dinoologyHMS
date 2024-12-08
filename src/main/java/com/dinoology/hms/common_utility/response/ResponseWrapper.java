@@ -1,6 +1,8 @@
 package com.dinoology.hms.common_utility.response;
 
 import com.dinoology.hms.common_utility.constants.ApplicationConstants;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +14,8 @@ import java.util.TimeZone;
  * Created: 12/8/2024 7:33 PM
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"status", "message", "data"})
 public class ResponseWrapper<T> implements Serializable {
 
     private String message;
