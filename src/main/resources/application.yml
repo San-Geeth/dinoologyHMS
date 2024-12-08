@@ -17,6 +17,6 @@ server:
   servlet:
     context-path: /api/v1
 
-my:
-  environment:
-    path-variable: ${MARKET}
+app:
+  staff:
+    id-prefix: EL
