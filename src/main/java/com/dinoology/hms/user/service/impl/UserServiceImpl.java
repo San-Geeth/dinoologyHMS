@@ -1,5 +1,7 @@
 package com.dinoology.hms.user.service.impl;
 
+import com.dinoology.hms.common_utility.response.ResponseWrapper;
+import com.dinoology.hms.user.constants.UserConstants;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.repository.UserRepository;
 import com.dinoology.hms.user.service.UserService;
@@ -7,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,10 +41,11 @@ public class UserServiceImpl implements UserService {
             // 3. Generate a temporary password for the user.
             // 4. Send an email with the generated username and temporary password (if an email address exists).
             if(userRepository.existsByUsername(user.getUsername())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Available");
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseWrapper<>().responseFail(UserConstants.USERNAME_FOUND));
             } else {
-                User newUser = userRepository.save(user);
-                return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+                userRepository.save(user);
+                return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.USER_ADDED_SUCCESSFULLY));
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
