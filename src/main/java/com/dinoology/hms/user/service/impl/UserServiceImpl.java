@@ -1,16 +1,16 @@
 package com.dinoology.hms.user.service.impl;
 
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
+import com.dinoology.hms.common_utility.services.MailService;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.user.constants.UserConstants;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.repository.UserRepository;
 import com.dinoology.hms.user.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,27 +31,22 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final StaffRepository staffRepository;
+    private final MailService mailService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${app.user.initial-password}")
     private String initialPassword;
 
-    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository) {
+    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService) {
         this.userRepository = userRepository;
         this.staffRepository = staffRepository;
+        this.mailService = mailService;
     }
 
     @Override
     public ResponseEntity<?> addUser(HttpServletRequest request, HttpServletResponse response, User user) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
-            // TODO: If 'isExternal' is false:
-            // 1. Fetch the associated Staff member details using the provided user information.
-            // 2. Check if the Staff member has an email address:
-            //    - If yes, set the email as the username.
-            //    - If no, generate a username using the Staff member's first name.
-            // 3. Generate a temporary password for the user.
-            // 4. Send an email with the generated username and temporary password (if an email address exists).
             User newUser = new User();
             if(!user.getIsExternal()) {
                 Optional<StaffMember> staffMemberOptional = staffRepository.findById(user.getStaffMemberId());
@@ -63,6 +58,21 @@ public class UserServiceImpl implements UserService {
                     }
                     newUser.setPassword(initialPassword);
                     newUser.setStaffMember(staffMember);
+
+                    /*
+                    TODO: Enhance below to send proper content and proper data
+                        - need to build redirection URL to frontend with token
+                        - need to get token to verify password change when user changing password correctly
+                        - if change success user must redirect to login screen of frontend
+                    */
+                    if(staffMember.getEmail() != null) {
+                        try {
+                            String mailContent = mailService.buildPasswordResetEmail("https://www.lipsum.com/");
+                            mailService.sendHtmlEmail(staffMember.getEmail(), "Reset your password", mailContent);
+                        } catch (MessagingException e) {
+                            logger.error("Error while sending email: {}", e.getMessage());
+                        }
+                    }
                     return getUserResponse(newUser);
                 } else {
                     logger.info("Avoiding adding user for id: {}, staff member not found!", user.getStaffMemberId());
