@@ -12,6 +12,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   servlet:
@@ -20,3 +32,7 @@ server:
 app:
   staff:
     id-prefix: EL
+  user:
+    initial-password: User@123
+
+
