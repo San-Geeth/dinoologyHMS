@@ -35,4 +35,8 @@ app:
   user:
     initial-password: User@123
 
+client:
+  name: Kanola
+  logo-url: empty
+
 
