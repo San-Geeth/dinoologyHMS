@@ -41,6 +41,13 @@ public class User {
     @Transient
     private Integer staffMemberId;
 
+    public User(Integer id, String username, String userEmail, Boolean isActive) {
+        this.id = id;
+        this.isActive = isActive;
+        this.username = username;
+        this.userEmail = userEmail;
+    }
+
     @Override
     public String toString() {
         return "User{" +
