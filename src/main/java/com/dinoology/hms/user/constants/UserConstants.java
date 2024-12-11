@@ -8,5 +8,7 @@ public class UserConstants {
     //http
     public static final String USERNAME_FOUND = "Username Already Exits!";
     public static final String USER_ADDED_SUCCESSFULLY = "User Added Successfully!";
+    public static final String ACCOUNT_DEACTIVATED_SUCCESSFULLY = "Account Deactivated Successfully!";
+    public static final String ACCOUNT_NOT_FOUND = "Account Not Found!";
     public static final String STAFF_MEMBER_FOR_USER_NOT_FOUND = "Staff Member Not Found!";
 }

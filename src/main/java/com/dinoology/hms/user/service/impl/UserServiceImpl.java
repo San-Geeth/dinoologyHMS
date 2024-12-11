@@ -93,6 +93,44 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // TODO: Enhance this with best practices
+    @Override
+    public ResponseEntity<?> deactivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId) {
+        logger.info("Request URI: {}", request.getRequestURI());
+        try {
+            User checkingUser = userRepository.findByUserId(userId);
+            if(checkingUser != null) {
+                int rowAffected = userRepository.deactivateUser(userId);
+                if (rowAffected == 1) {
+                    logger.info("Account Deactivated Successfully: {}", userId);
+
+                    Optional<User> verifyingUpdate = userRepository.findById(userId);
+                    return verifyingUpdate.map(user ->
+                            ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(user))
+                    ).orElseGet(() -> {
+                        logger.error("Failed to fetch updated user after deactivation: {}", userId);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new ResponseWrapper<>().responseFail("User not found after deactivation"));
+                    });
+                } else {
+                    logger.info("Account Deactivation Failed: {}", userId);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+                }
+            } else {
+                return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.ACCOUNT_NOT_FOUND));
+            }
+        } catch (DataAccessException e) {
+            logger.error("Database error while adding staff member: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
+    }
+
     private ResponseEntity<?> getUserResponse(User user) {
         if(userRepository.existsByUsername(user.getUsername())) {
             logger.info("Avoiding adding user: {}, user already exists!", user.getUsername());
