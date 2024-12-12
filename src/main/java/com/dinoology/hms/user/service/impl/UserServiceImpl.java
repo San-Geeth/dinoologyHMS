@@ -94,7 +94,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> deactivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId) {
+    public ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response,
+                                                    Integer userId, boolean status) {
         logger.info("Received deactivate user request. URI: {}, UserId: {}", request.getRequestURI(), userId);
         try {
             if (userId == null || userId <= 0) {
@@ -111,14 +112,20 @@ public class UserServiceImpl implements UserService {
                         .body(new ResponseWrapper<>().responseFail("User not found"));
             }
 
-            if (!checkingUser.getIsActive()) {
-                logger.warn("User not found for ID: {}", userId);
+            if (!checkingUser.getIsActive() && !status) {
+                logger.warn("Account already deactivated for ID: {}", userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new ResponseWrapper<>().responseFail("Account Already Deactivated!"));
             }
 
+            if (checkingUser.getIsActive() && status) {
+                logger.warn("Account already in active status for ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseWrapper<>().responseFail("Account in Active Status!"));
+            }
+
             // Attempt to deactivate the user
-            int rowsAffected = userRepository.deactivateUser(userId);
+            int rowsAffected = userRepository.deactivateActivateUser(userId, status);
             if (rowsAffected != 1) {
                 logger.error("Failed to deactivate user. UserId: {}", userId);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -126,12 +133,17 @@ public class UserServiceImpl implements UserService {
             }
 
             logger.info("User successfully deactivated. UserId: {}", userId);
-
-            // Verify the update
-            return ResponseEntity.ok(
-                    new ResponseWrapper<>()
-                            .responseOk("User has been successfully deactivated.")
-            );
+            if (status) {
+                return ResponseEntity.ok(
+                        new ResponseWrapper<>()
+                                .responseOk("User Account has been successfully activated.")
+                );
+            } else {
+                return ResponseEntity.ok(
+                        new ResponseWrapper<>()
+                                .responseOk("User has been successfully deactivated.")
+                );
+            }
         } catch (DataAccessException ex) {
             logger.error("Database error while deactivating user. UserId: {}, Error: {}", userId, ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
