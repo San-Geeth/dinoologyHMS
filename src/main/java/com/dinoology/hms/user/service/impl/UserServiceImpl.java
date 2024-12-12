@@ -94,7 +94,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId, boolean status) {
+    public ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response,
+                                                    Integer userId, boolean status) {
         logger.info("Received deactivate user request. URI: {}, UserId: {}", request.getRequestURI(), userId);
         try {
             if (userId == null || userId <= 0) {
