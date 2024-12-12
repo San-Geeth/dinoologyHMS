@@ -1,6 +1,7 @@
 package com.dinoology.hms.user.model;
 
 import com.dinoology.hms.staff.model.StaffMember;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

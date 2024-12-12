@@ -93,39 +93,63 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // TODO: Enhance this with best practices
     @Override
-    public ResponseEntity<?> deactivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId) {
-        logger.info("Request URI: {}", request.getRequestURI());
+    public ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response,
+                                                    Integer userId, boolean status) {
+        logger.info("Received deactivate user request. URI: {}, UserId: {}", request.getRequestURI(), userId);
         try {
-            User checkingUser = userRepository.findByUserId(userId);
-            if(checkingUser != null) {
-                int rowAffected = userRepository.deactivateUser(userId);
-                if (rowAffected == 1) {
-                    logger.info("Account Deactivated Successfully: {}", userId);
-
-                    Optional<User> verifyingUpdate = userRepository.findById(userId);
-                    return verifyingUpdate.map(user ->
-                            ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(user))
-                    ).orElseGet(() -> {
-                        logger.error("Failed to fetch updated user after deactivation: {}", userId);
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                .body(new ResponseWrapper<>().responseFail("User not found after deactivation"));
-                    });
-                } else {
-                    logger.info("Account Deactivation Failed: {}", userId);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
-                }
-            } else {
-                return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.ACCOUNT_NOT_FOUND));
+            if (userId == null || userId <= 0) {
+                logger.warn("Invalid userId provided: {}", userId);
+                return ResponseEntity.badRequest()
+                        .body(new ResponseWrapper<>().responseFail("Invalid user ID provided"));
             }
-        } catch (DataAccessException e) {
-            logger.error("Database error while adding staff member: {}", e.getMessage());
+
+            // Fetch the user to check if it exists
+            User checkingUser = userRepository.findByUserId(userId);
+            if (checkingUser == null) {
+                logger.warn("User not found for ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseWrapper<>().responseFail("User not found"));
+            }
+
+            if (!checkingUser.getIsActive() && !status) {
+                logger.warn("Account already deactivated for ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseWrapper<>().responseFail("Account Already Deactivated!"));
+            }
+
+            if (checkingUser.getIsActive() && status) {
+                logger.warn("Account already in active status for ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseWrapper<>().responseFail("Account in Active Status!"));
+            }
+
+            // Attempt to deactivate the user
+            int rowsAffected = userRepository.deactivateActivateUser(userId, status);
+            if (rowsAffected != 1) {
+                logger.error("Failed to deactivate user. UserId: {}", userId);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ResponseWrapper<>().responseFail("Failed to deactivate user"));
+            }
+
+            logger.info("User successfully deactivated. UserId: {}", userId);
+            if (status) {
+                return ResponseEntity.ok(
+                        new ResponseWrapper<>()
+                                .responseOk("User Account has been successfully activated.")
+                );
+            } else {
+                return ResponseEntity.ok(
+                        new ResponseWrapper<>()
+                                .responseOk("User has been successfully deactivated.")
+                );
+            }
+        } catch (DataAccessException ex) {
+            logger.error("Database error while deactivating user. UserId: {}, Error: {}", userId, ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("Database error occurred"));
-        } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+        } catch (Exception ex) {
+            logger.error("Unexpected error while deactivating user. UserId: {}, Error: {}", userId, ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
         }
