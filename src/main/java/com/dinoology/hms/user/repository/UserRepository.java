@@ -22,6 +22,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.isActive=false WHERE u.id=:userId")
-    int deactivateUser(@Param("userId") Integer userId);
+    @Query("UPDATE User u SET u.isActive=:status WHERE u.id=:userId")
+    int deactivateActivateUser(@Param("userId") Integer userId, @Param("status") boolean status);
 }

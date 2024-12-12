@@ -11,5 +11,5 @@ import org.springframework.http.ResponseEntity;
  */
 public interface UserService {
     ResponseEntity<?> addUser(HttpServletRequest request, HttpServletResponse response, User user);
-    ResponseEntity<?> deactivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId);
+    ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId, boolean status);
 }
