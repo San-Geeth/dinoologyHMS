@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
                         - need to build redirection URL to frontend with token
                         - need to get token to verify password change when user changing password correctly
                         - if change success user must redirect to login screen of frontend
+                        - send email asynchronously
                     */
                     if(staffMember.getEmail() != null) {
                         try {
