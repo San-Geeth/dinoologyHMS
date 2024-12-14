@@ -6,7 +6,9 @@ import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.user.constants.UserConstants;
 import com.dinoology.hms.user.model.User;
+import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.repository.UserRepository;
+import com.dinoology.hms.user.repository.UserTypeRepository;
 import com.dinoology.hms.user.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,16 +33,18 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final StaffRepository staffRepository;
+    private final UserTypeRepository userTypeRepository;
     private final MailService mailService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${app.user.initial-password}")
     private String initialPassword;
 
-    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService) {
+    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService, UserTypeRepository userTypeRepository) {
         this.userRepository = userRepository;
         this.staffRepository = staffRepository;
         this.mailService = mailService;
+        this.userTypeRepository = userTypeRepository;
     }
 
     @Override
@@ -151,6 +155,23 @@ public class UserServiceImpl implements UserService {
                     .body(new ResponseWrapper<>().responseFail("Database error occurred"));
         } catch (Exception ex) {
             logger.error("Unexpected error while deactivating user. UserId: {}, Error: {}", userId, ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, UserType userType) {
+        logger.info("Received user add user request. URI: {}, data: {}", request.getRequestURI(), userType);
+        try {
+            userTypeRepository.save(userType);
+            return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.USER_ADDED_SUCCESSFULLY));
+        } catch (DataAccessException e) {
+            logger.error("Database error while adding staff member: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
         }
