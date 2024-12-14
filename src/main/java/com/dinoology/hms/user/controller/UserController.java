@@ -1,6 +1,7 @@
 package com.dinoology.hms.user.controller;
 
 import com.dinoology.hms.user.model.User;
+import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,5 +31,10 @@ public class UserController {
     ResponseEntity<?> deactivateUser(HttpServletRequest request, HttpServletResponse response,
                                      @PathVariable Integer userId, @RequestParam boolean status) {
         return userService.deactivateActivateUser(request, response, userId, status);
+    }
+
+    @PostMapping("/add/user-type")
+    ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, @RequestBody UserType userType) {
+        return userService.addUserType(request, response, userType);
     }
 }

@@ -1,6 +1,7 @@
 package com.dinoology.hms.user.service;
 
 import com.dinoology.hms.user.model.User;
+import com.dinoology.hms.user.model.UserType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -11,5 +12,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface UserService {
     ResponseEntity<?> addUser(HttpServletRequest request, HttpServletResponse response, User user);
-    ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId, boolean status);
+    ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId,
+                                             boolean status);
+    ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, UserType userType);
 }

@@ -4,9 +4,11 @@ import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.services.MailService;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
-import com.dinoology.hms.user.constants.UserConstants;
+import com.dinoology.hms.user.constants.UserResponseMessageConstants;
 import com.dinoology.hms.user.model.User;
+import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.repository.UserRepository;
+import com.dinoology.hms.user.repository.UserTypeRepository;
 import com.dinoology.hms.user.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,16 +33,18 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final StaffRepository staffRepository;
+    private final UserTypeRepository userTypeRepository;
     private final MailService mailService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${app.user.initial-password}")
     private String initialPassword;
 
-    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService) {
+    public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService, UserTypeRepository userTypeRepository) {
         this.userRepository = userRepository;
         this.staffRepository = staffRepository;
         this.mailService = mailService;
+        this.userTypeRepository = userTypeRepository;
     }
 
     @Override
@@ -78,7 +82,7 @@ public class UserServiceImpl implements UserService {
                 } else {
                     logger.info("Avoiding adding user for id: {}, staff member not found!", user.getStaffMemberId());
                     return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body(new ResponseWrapper<>().responseFail(UserConstants.STAFF_MEMBER_FOR_USER_NOT_FOUND));
+                            .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.STAFF_MEMBER_FOR_USER_NOT_FOUND));
                 }
             } else {
                 return getUserResponse(user);
@@ -99,30 +103,24 @@ public class UserServiceImpl implements UserService {
                                                     Integer userId, boolean status) {
         logger.info("Received deactivate user request. URI: {}, UserId: {}", request.getRequestURI(), userId);
         try {
-            if (userId == null || userId <= 0) {
-                logger.warn("Invalid userId provided: {}", userId);
-                return ResponseEntity.badRequest()
-                        .body(new ResponseWrapper<>().responseFail("Invalid user ID provided"));
-            }
-
             // Fetch the user to check if it exists
             User checkingUser = userRepository.findByUserId(userId);
             if (checkingUser == null) {
                 logger.warn("User not found for ID: {}", userId);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseWrapper<>().responseFail("User not found"));
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.ACCOUNT_NOT_FOUND));
             }
 
             if (!checkingUser.getIsActive() && !status) {
                 logger.warn("Account already deactivated for ID: {}", userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseWrapper<>().responseFail("Account Already Deactivated!"));
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.ACCOUNT_IN_DEACTIVATED));
             }
 
             if (checkingUser.getIsActive() && status) {
                 logger.warn("Account already in active status for ID: {}", userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseWrapper<>().responseFail("Account in Active Status!"));
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.ACCOUNT_IN_ACTIVATED));
             }
 
             // Attempt to deactivate the user
@@ -130,7 +128,7 @@ public class UserServiceImpl implements UserService {
             if (rowsAffected != 1) {
                 logger.error("Failed to deactivate user. UserId: {}", userId);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new ResponseWrapper<>().responseFail("Failed to deactivate user"));
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.UNABLE_TO_APPLY_CHANGES));
             }
 
             logger.info("User successfully deactivated. UserId: {}", userId);
@@ -156,15 +154,51 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, UserType userType) {
+        logger.info("Received user add user request. URI: {}, data: {}", request.getRequestURI(), userType);
+        try {
+            if (userType.getType() != null) {
+                userType.setType(userType.getType().toUpperCase());
+            }
+
+            // Check if the type already exists
+            if (userTypeRepository.existsByType(userType.getType())) {
+                logger.warn("Type already defined: {}", userType.getType());
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.USER_TYPE_EXISTS));
+            }
+
+            // Validate type length
+            if (!(userType.getType().length() > 1 && userType.getType().length() <= 50)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.USER_TYPE_MUST_BETWEEN));
+            }
+
+            // Save the new user type
+            UserType newUserType = userTypeRepository.save(userType);
+            return ResponseEntity.ok().body(new ResponseWrapper<>()
+                    .responseOk(UserResponseMessageConstants.USER_TYPE_ADDED_SUCCESSFULLY, newUserType));
+        } catch (DataAccessException e) {
+            logger.error("Database error while adding staff member: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
+    }
+
     private ResponseEntity<?> getUserResponse(User user) {
         if(userRepository.existsByUsername(user.getUsername())) {
             logger.info("Avoiding adding user: {}, user already exists!", user.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseWrapper<>().responseFail(UserConstants.USERNAME_FOUND));
+                    .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.USERNAME_FOUND));
         } else {
             userRepository.save(user);
             logger.info("User Added Successfully: {}", user);
-            return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserConstants.USER_ADDED_SUCCESSFULLY));
+            return ResponseEntity.ok().body(new ResponseWrapper<>().responseOk(UserResponseMessageConstants.USER_ADDED_SUCCESSFULLY));
         }
     }
 }
