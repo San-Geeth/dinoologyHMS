@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Copyright © 2024 DinooLogy
  */
 public interface UserTypeRepository extends JpaRepository<UserType, Integer> {
+    boolean existsByType(String type);
 }
