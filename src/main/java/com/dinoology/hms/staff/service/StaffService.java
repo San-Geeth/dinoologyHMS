@@ -13,4 +13,5 @@ import org.springframework.stereotype.Service;
  */
 public interface StaffService {
     ResponseEntity<?> addStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
+    ResponseEntity<?> updateStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
 }
