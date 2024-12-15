@@ -29,7 +29,7 @@ import java.util.Optional;
  * Created: 12/8/2024 5:53 PM
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class  UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final StaffRepository staffRepository;
@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${app.user.initial-password}")
     private String initialPassword;
+    @Value("${app.user.reset-mail-active}")
+    private boolean resetMailActive;
 
     public UserServiceImpl(UserRepository userRepository, StaffRepository staffRepository, MailService mailService, UserTypeRepository userTypeRepository) {
         this.userRepository = userRepository;
@@ -51,8 +53,20 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> addUser(HttpServletRequest request, HttpServletResponse response, User user) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
+            UserType userType = userTypeRepository.findById(user.getUserTypeId())
+                    .orElse(null); // Get the value or null if not present
+
+            if(userType == null) {
+                logger.warn("User type not found for ID: {}", user.getUserTypeId());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseWrapper<>().responseFail(UserResponseMessageConstants.USER_TYPE_NOT_FOUND));
+            }
+
+            user.setUserType(userType);
+
             User newUser = new User();
             if(!user.getIsExternal()) {
+                newUser.setUserType(userType);
                 Optional<StaffMember> staffMemberOptional = staffRepository.findById(user.getStaffMemberId());
                 if (staffMemberOptional.isPresent()) {
                     StaffMember staffMember = staffMemberOptional.get();
@@ -70,7 +84,7 @@ public class UserServiceImpl implements UserService {
                         - if change success user must redirect to login screen of frontend
                         - send email asynchronously
                     */
-                    if(staffMember.getEmail() != null) {
+                    if(staffMember.getEmail() != null && resetMailActive) {
                         try {
                             String mailContent = mailService.buildPasswordResetEmail("https://www.lipsum.com/");
                             mailService.sendHtmlEmail(staffMember.getEmail(), "Reset your password", mailContent);

@@ -41,7 +41,7 @@ public class StaffMember {
     private String empId;
     private String emergencyContact;
     private String emergencyName;
-    private Boolean employementStatus = true;
+    private Boolean employmentStatus = true;
     private String imgURL;
     @CreationTimestamp
     @Column(updatable = false)
@@ -66,7 +66,7 @@ public class StaffMember {
                 ", empId='" + empId + '\'' +
                 ", emergencyContact='" + emergencyContact + '\'' +
                 ", emergencyName='" + emergencyName + '\'' +
-                ", employementStatus=" + employementStatus +
+                ", employmentStatus=" + employmentStatus +
                 ", imgURL='" + imgURL + '\'' +
                 ", createdAt=" + createdAt +
                 '}';

@@ -21,4 +21,5 @@ public class UserResponseMessageConstants {
     public static final String USER_TYPE_MUST_BETWEEN = "Type must be between 1 and 50 characters!";
     public static final String USER_TYPE_ADDED_SUCCESSFULLY = "User Type Added Successfully!";
     public static final String USER_TYPE_EXISTS = "User Type Already Exists!";
+    public static final String USER_TYPE_NOT_FOUND = "User Type Not Found!";
 }

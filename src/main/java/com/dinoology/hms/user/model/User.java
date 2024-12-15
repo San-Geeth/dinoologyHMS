@@ -39,9 +39,14 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_member_id", referencedColumnName = "id")
     private StaffMember staffMember;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_type", referencedColumnName = "id")
+    private UserType userType;
 
     @Transient
     private Integer staffMemberId;
+    @Transient
+    private Integer userTypeId;
 
     public User(Integer id, String username, String userEmail, Boolean isActive) {
         this.id = id;
