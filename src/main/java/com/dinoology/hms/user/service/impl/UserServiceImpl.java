@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.ok().body(new ResponseWrapper<>()
                     .responseOk(UserResponseMessageConstants.USER_TYPE_ADDED_SUCCESSFULLY, newUserType));
         } catch (DataAccessException e) {
-            logger.error("Database error while adding staff member: {}", e.getMessage());
+            logger.error("Database error while adding user type: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("Database error occurred"));
         } catch (Exception e) {
