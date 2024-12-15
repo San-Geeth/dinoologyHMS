@@ -34,6 +34,6 @@ app:
     id-prefix: EL
   user:
     initial-password: User@123
-    reset-mail-active: true
+    reset-mail-active: false
 
 

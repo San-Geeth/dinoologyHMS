@@ -30,4 +30,10 @@ public class StaffController {
                                      @RequestBody StaffMember member) {
         return staffService.addStaffMember(request, response, member);
     }
+
+    @PostMapping("member/update")
+    ResponseEntity<?> updateStaffMember(HttpServletRequest request, HttpServletResponse response,
+                                        @RequestBody StaffMember member) {
+        return staffService.updateStaffMember(request, response, member);
+    }
 }
