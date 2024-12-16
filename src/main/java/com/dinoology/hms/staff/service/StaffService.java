@@ -14,5 +14,5 @@ public interface StaffService {
     ResponseEntity<?> addStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
     ResponseEntity<?> updateStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
     ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
-                                         GetAllStaffMembers getAllStaffMembersDAO);
+                                         GetAllStaffMembers getAllStaffMembersDTO);
 }

@@ -42,8 +42,8 @@ public class StaffController {
 
     @PostMapping("/member/get-all")
     ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
-                                         @RequestBody GetAllStaffMembers getAllStaffMembersDAO) {
-        return staffService.getAllStaffMembers(request, response, getAllStaffMembersDAO);
+                                         @RequestBody GetAllStaffMembers getAllStaffMembersDTO) {
+        return staffService.getAllStaffMembers(request, response, getAllStaffMembersDTO);
     }
 
     @PostMapping("/designation/add")

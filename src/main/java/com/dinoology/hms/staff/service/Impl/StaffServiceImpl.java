@@ -172,10 +172,11 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response, GetAllStaffMembers getAllStaffMembersDAO) {
-        logger.info("Request URI: {} for  {}", request.getRequestURI());
+    public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
+                                                GetAllStaffMembers getAllStaffMembersDTO) {
+        logger.info("Request URI: {}", request.getRequestURI());
         try {
-            Pageable pageable = PageRequest.of(getAllStaffMembersDAO.getPage(), getAllStaffMembersDAO.getSize());
+            Pageable pageable = PageRequest.of(getAllStaffMembersDTO.getPage(), getAllStaffMembersDTO.getSize());
             Page<StaffMember> staffPage = staffRepository.findAll(pageable);
 
             Map<String, Object> responseBody = new HashMap<>();
