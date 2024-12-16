@@ -4,7 +4,9 @@ import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.support.SupportMethods;
 import com.dinoology.hms.staff.constants.StaffResponseMessageConstants;
 import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
+import com.dinoology.hms.staff.model.Designation;
 import com.dinoology.hms.staff.model.StaffMember;
+import com.dinoology.hms.staff.repository.DesignationRepository;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.staff.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,12 +35,14 @@ public class StaffServiceImpl implements StaffService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final StaffRepository staffRepository;
+    private final DesignationRepository designationRepository;
 
     @Value("${app.staff.id-prefix}")
     private String idPrefix;
 
-    public StaffServiceImpl(StaffRepository staffRepository) {
+    public StaffServiceImpl(StaffRepository staffRepository, DesignationRepository designationRepository) {
         this.staffRepository = staffRepository;
+        this.designationRepository = designationRepository;
     }
 
     @Override
@@ -54,13 +58,22 @@ public class StaffServiceImpl implements StaffService {
             // Save the new staff member to the database
             StaffMember newStaffMember = staffRepository.save(staffMember);
 
+            // Set designation
+            Optional<Designation> checkingDesignation = designationRepository.findById(staffMember.getDesignationId());
+            if(checkingDesignation.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseWrapper<>().responseFail(StaffResponseMessageConstants.DESIGNATION_NOT_FOUND));
+            }
+            Designation designation = checkingDesignation.get();
+            newStaffMember.setDesignation(designation);
+
             // Change empID and save again
             newStaffMember.setEmpId(generateEMPID(newStaffMember.getId()));
-            StaffMember savedMember = staffRepository.save(staffMember);
+            StaffMember savedMember = staffRepository.save(newStaffMember);
 
             // Return success response
             return ResponseEntity.ok().body(new ResponseWrapper<>()
-                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY, savedMember));
+                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY, newStaffMember));
 
         } catch (DataAccessException e) {
             logger.error("Database error while adding staff member: {}", e.getMessage());

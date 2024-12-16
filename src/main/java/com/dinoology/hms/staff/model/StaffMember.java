@@ -36,7 +36,9 @@ public class StaffMember {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
-    private String designation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "designation", referencedColumnName = "id")
+    private Designation designation;
     private String salary;
     private String empId;
     private String emergencyContact;
@@ -46,6 +48,9 @@ public class StaffMember {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Transient
+    private Integer designationId;
 
     @Override
     public String toString() {
