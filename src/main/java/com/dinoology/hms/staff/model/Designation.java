@@ -24,7 +24,7 @@ public class Designation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String key;
+    private String designationKey;
     private String designation;
     @CreationTimestamp
     @Column(updatable = false)

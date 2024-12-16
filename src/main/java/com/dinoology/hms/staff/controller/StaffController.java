@@ -1,7 +1,9 @@
 package com.dinoology.hms.staff.controller;
 
 import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
+import com.dinoology.hms.staff.model.Designation;
 import com.dinoology.hms.staff.model.StaffMember;
+import com.dinoology.hms.staff.service.DesignationService;
 import com.dinoology.hms.staff.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/staff")
 public class StaffController {
     private final StaffService staffService;
+    private final DesignationService designationService;
 
-    public StaffController(StaffService staffService) {
+    public StaffController(StaffService staffService, DesignationService designationService) {
         this.staffService = staffService;
+        this.designationService = designationService;
     }
 
     @PostMapping("/member/add")
@@ -40,5 +44,17 @@ public class StaffController {
     ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
                                          @RequestBody GetAllStaffMembers getAllStaffMembersDAO) {
         return staffService.getAllStaffMembers(request, response, getAllStaffMembersDAO);
+    }
+
+    @PostMapping("/designation/add")
+    ResponseEntity<?> addNewDesignation(HttpServletRequest request, HttpServletResponse response,
+                                        @RequestBody Designation designation) {
+        return designationService.addNewDesignation(request, response, designation);
+    }
+
+    @PostMapping("/designation/update")
+    ResponseEntity<?> editDesignation(HttpServletRequest request, HttpServletResponse response,
+                                        @RequestBody Designation designation) {
+        return designationService.editDesignation(request, response, designation);
     }
 }
