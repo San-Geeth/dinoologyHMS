@@ -1,10 +1,10 @@
 package com.dinoology.hms.staff.controller;
 
+import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/staff")
-
 public class StaffController {
     private final StaffService staffService;
 
@@ -31,9 +30,15 @@ public class StaffController {
         return staffService.addStaffMember(request, response, member);
     }
 
-    @PostMapping("member/update")
+    @PostMapping("/member/update")
     ResponseEntity<?> updateStaffMember(HttpServletRequest request, HttpServletResponse response,
                                         @RequestBody StaffMember member) {
         return staffService.updateStaffMember(request, response, member);
+    }
+
+    @PostMapping("/member/get-all")
+    ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestBody GetAllStaffMembers getAllStaffMembersDAO) {
+        return staffService.getAllStaffMembers(request, response, getAllStaffMembersDAO);
     }
 }

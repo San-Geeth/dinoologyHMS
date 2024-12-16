@@ -3,6 +3,7 @@ package com.dinoology.hms.staff.service.Impl;
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.support.SupportMethods;
 import com.dinoology.hms.staff.constants.StaffResponseMessageConstants;
+import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.staff.service.StaffService;
@@ -12,10 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,7 +45,6 @@ public class StaffServiceImpl implements StaffService {
     public ResponseEntity<?> addStaffMember(HttpServletRequest request, HttpServletResponse response,
                                             StaffMember staffMember) {
         logger.info("Request URI: {}", request.getRequestURI());
-
         try {
             // Check if staff member already exists by NIC
             if (staffRepository.existsByNic(staffMember.getNic())) {
@@ -51,11 +56,11 @@ public class StaffServiceImpl implements StaffService {
 
             // Change empID and save again
             newStaffMember.setEmpId(generateEMPID(newStaffMember.getId()));
-            staffRepository.save(staffMember);
+            StaffMember savedMember = staffRepository.save(staffMember);
 
             // Return success response
             return ResponseEntity.ok().body(new ResponseWrapper<>()
-                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY));
+                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY, savedMember));
 
         } catch (DataAccessException e) {
             logger.error("Database error while adding staff member: {}", e.getMessage());
@@ -144,6 +149,32 @@ public class StaffServiceImpl implements StaffService {
                     .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_UPDATED_SUCCESSFULLY));
         } catch (DataAccessException e) {
             logger.error("Database error while updating staff member: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response, GetAllStaffMembers getAllStaffMembersDAO) {
+        logger.info("Request URI: {} for  {}", request.getRequestURI());
+        try {
+            Pageable pageable = PageRequest.of(getAllStaffMembersDAO.getPage(), getAllStaffMembersDAO.getSize());
+            Page<StaffMember> staffPage = staffRepository.findAll(pageable);
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("staffMembers", staffPage.getContent());
+            responseBody.put("currentPage", staffPage.getNumber());
+            responseBody.put("totalItems", staffPage.getTotalElements());
+            responseBody.put("totalPages", staffPage.getTotalPages());
+
+            return ResponseEntity.ok().body(new ResponseWrapper<>()
+                    .responseOk(responseBody));
+        } catch (DataAccessException e) {
+            logger.error("Database error while getting all staff members: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("Database error occurred"));
         } catch (Exception e) {
