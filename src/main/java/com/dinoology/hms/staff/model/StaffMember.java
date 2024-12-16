@@ -36,7 +36,7 @@ public class StaffMember {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "designation", referencedColumnName = "id")
     private Designation designation;
     private String salary;

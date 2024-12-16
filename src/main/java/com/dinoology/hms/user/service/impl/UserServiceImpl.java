@@ -5,6 +5,7 @@ import com.dinoology.hms.common_utility.services.MailService;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.user.constants.UserResponseMessageConstants;
+import com.dinoology.hms.user.dto.request.GetAllUsers;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.repository.UserRepository;
@@ -17,10 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -195,6 +201,32 @@ public class  UserServiceImpl implements UserService {
                     .responseOk(UserResponseMessageConstants.USER_TYPE_ADDED_SUCCESSFULLY, newUserType));
         } catch (DataAccessException e) {
             logger.error("Database error while adding user type: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getAllUsers(HttpServletRequest request, HttpServletResponse response, GetAllUsers getAllUsersDTO) {
+        logger.info("Request URI: {}", request.getRequestURI());
+        try {
+            Pageable pageable = PageRequest.of(getAllUsersDTO.getPage(), getAllUsersDTO.getSize());
+            Page<User> userPage = userRepository.findAll(pageable);
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("users", userPage.getContent());
+            responseBody.put("currentPage", userPage.getNumber());
+            responseBody.put("totalItems", userPage.getTotalElements());
+            responseBody.put("totalPages", userPage.getTotalPages());
+
+            return ResponseEntity.ok().body(new ResponseWrapper<>()
+                    .responseOk(responseBody));
+        } catch (DataAccessException e) {
+            logger.error("Database error while getting all users: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper<>().responseFail("Database error occurred"));
         } catch (Exception e) {

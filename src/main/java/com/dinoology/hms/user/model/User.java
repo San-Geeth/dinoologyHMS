@@ -39,7 +39,7 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_member_id", referencedColumnName = "id")
     private StaffMember staffMember;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_type", referencedColumnName = "id")
     private UserType userType;
 

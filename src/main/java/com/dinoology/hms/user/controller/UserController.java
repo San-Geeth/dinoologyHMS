@@ -1,5 +1,6 @@
 package com.dinoology.hms.user.controller;
 
+import com.dinoology.hms.user.dto.request.GetAllUsers;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.service.UserService;
@@ -36,5 +37,11 @@ public class UserController {
     @PostMapping("/add/user-type")
     ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, @RequestBody UserType userType) {
         return userService.addUserType(request, response, userType);
+    }
+
+    @PostMapping("/get-all")
+    ResponseEntity<?> getAllUser(HttpServletRequest request, HttpServletResponse response,
+                                 @RequestBody GetAllUsers getAllUsersDTO) {
+        return userService.getAllUsers(request, response, getAllUsersDTO);
     }
 }

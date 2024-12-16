@@ -55,8 +55,6 @@ public class StaffServiceImpl implements StaffService {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new ResponseWrapper<>().responseFail(StaffResponseMessageConstants.STAFF_MEMBER_EXISTS));
             }
-            // Save the new staff member to the database
-            StaffMember newStaffMember = staffRepository.save(staffMember);
 
             // Set designation
             Optional<Designation> checkingDesignation = designationRepository.findById(staffMember.getDesignationId());
@@ -65,15 +63,18 @@ public class StaffServiceImpl implements StaffService {
                         .body(new ResponseWrapper<>().responseFail(StaffResponseMessageConstants.DESIGNATION_NOT_FOUND));
             }
             Designation designation = checkingDesignation.get();
-            newStaffMember.setDesignation(designation);
+            staffMember.setDesignation(designation);
+
+            // Save the new staff member to the database
+            StaffMember newStaffMember = staffRepository.save(staffMember);
 
             // Change empID and save again
             newStaffMember.setEmpId(generateEMPID(newStaffMember.getId()));
-            StaffMember savedMember = staffRepository.save(newStaffMember);
+            StaffMember savedMember = staffRepository.save(staffMember);
 
             // Return success response
             return ResponseEntity.ok().body(new ResponseWrapper<>()
-                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY, newStaffMember));
+                    .responseOk(StaffResponseMessageConstants.STAFF_MEMBER_ADDED_SUCCESSFULLY, savedMember));
 
         } catch (DataAccessException e) {
             logger.error("Database error while adding staff member: {}", e.getMessage());
@@ -172,10 +173,11 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response, GetAllStaffMembers getAllStaffMembersDAO) {
-        logger.info("Request URI: {} for  {}", request.getRequestURI());
+    public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
+                                                GetAllStaffMembers getAllStaffMembersDTO) {
+        logger.info("Request URI: {}", request.getRequestURI());
         try {
-            Pageable pageable = PageRequest.of(getAllStaffMembersDAO.getPage(), getAllStaffMembersDAO.getSize());
+            Pageable pageable = PageRequest.of(getAllStaffMembersDTO.getPage(), getAllStaffMembersDTO.getSize());
             Page<StaffMember> staffPage = staffRepository.findAll(pageable);
 
             Map<String, Object> responseBody = new HashMap<>();

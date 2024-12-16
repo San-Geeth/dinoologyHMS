@@ -1,5 +1,6 @@
 package com.dinoology.hms.user.service;
 
+import com.dinoology.hms.user.dto.request.GetAllUsers;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.model.UserType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,4 +16,5 @@ public interface UserService {
     ResponseEntity<?> deactivateActivateUser(HttpServletRequest request, HttpServletResponse response, Integer userId,
                                              boolean status);
     ResponseEntity<?> addUserType(HttpServletRequest request, HttpServletResponse response, UserType userType);
+    ResponseEntity<?> getAllUsers(HttpServletRequest request, HttpServletResponse response, GetAllUsers getAllUsersDTO);
 }
