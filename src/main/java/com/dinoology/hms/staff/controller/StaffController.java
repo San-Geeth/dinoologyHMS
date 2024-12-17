@@ -1,6 +1,6 @@
 package com.dinoology.hms.staff.controller;
 
-import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.staff.model.Designation;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.service.DesignationService;
@@ -42,8 +42,8 @@ public class StaffController {
 
     @PostMapping("/member/get-all")
     ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
-                                         @RequestBody GetAllStaffMembers getAllStaffMembersDTO) {
-        return staffService.getAllStaffMembers(request, response, getAllStaffMembersDTO);
+                                         @RequestBody GeneralPaginationDataRequest paginationRequest) {
+        return staffService.getAllStaffMembers(request, response, paginationRequest);
     }
 
     @PostMapping("/designation/add")
@@ -56,5 +56,11 @@ public class StaffController {
     ResponseEntity<?> editDesignation(HttpServletRequest request, HttpServletResponse response,
                                         @RequestBody Designation designation) {
         return designationService.editDesignation(request, response, designation);
+    }
+
+    @PostMapping("/designation/get-all")
+    ResponseEntity<?> getAlLDesignations(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestBody GeneralPaginationDataRequest paginationRequest) {
+        return designationService.getAllDesignations(request, response, paginationRequest);
     }
 }

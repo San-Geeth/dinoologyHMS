@@ -1,9 +1,9 @@
 package com.dinoology.hms.staff.service.Impl;
 
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.support.SupportMethods;
 import com.dinoology.hms.staff.constants.StaffResponseMessageConstants;
-import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
 import com.dinoology.hms.staff.model.Designation;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.DesignationRepository;
@@ -174,10 +174,10 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
-                                                GetAllStaffMembers getAllStaffMembersDTO) {
+                                                GeneralPaginationDataRequest paginationRequest) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
-            Pageable pageable = PageRequest.of(getAllStaffMembersDTO.getPage(), getAllStaffMembersDTO.getSize());
+            Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize());
             Page<StaffMember> staffPage = staffRepository.findAll(pageable);
 
             Map<String, Object> responseBody = new HashMap<>();
