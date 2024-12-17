@@ -1,6 +1,6 @@
 package com.dinoology.hms.staff.service;
 
-import com.dinoology.hms.staff.dto.request.GetAllStaffMembers;
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.staff.model.StaffMember;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,5 +14,5 @@ public interface StaffService {
     ResponseEntity<?> addStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
     ResponseEntity<?> updateStaffMember(HttpServletRequest request, HttpServletResponse response, StaffMember staffMember);
     ResponseEntity<?> getAllStaffMembers(HttpServletRequest request, HttpServletResponse response,
-                                         GetAllStaffMembers getAllStaffMembersDTO);
+                                         GeneralPaginationDataRequest paginationRequest);
 }

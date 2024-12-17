@@ -1,11 +1,11 @@
 package com.dinoology.hms.user.service.impl;
 
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.services.MailService;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.repository.StaffRepository;
 import com.dinoology.hms.user.constants.UserResponseMessageConstants;
-import com.dinoology.hms.user.dto.request.GetAllUsers;
 import com.dinoology.hms.user.model.User;
 import com.dinoology.hms.user.model.UserType;
 import com.dinoology.hms.user.repository.UserRepository;
@@ -211,10 +211,10 @@ public class  UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getAllUsers(HttpServletRequest request, HttpServletResponse response, GetAllUsers getAllUsersDTO) {
+    public ResponseEntity<?> getAllUsers(HttpServletRequest request, HttpServletResponse response, GeneralPaginationDataRequest paginationRequest) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
-            Pageable pageable = PageRequest.of(getAllUsersDTO.getPage(), getAllUsersDTO.getSize());
+            Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize());
             Page<User> userPage = userRepository.findAll(pageable);
 
             Map<String, Object> responseBody = new HashMap<>();
