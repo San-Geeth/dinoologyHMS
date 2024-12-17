@@ -1,5 +1,6 @@
 package com.dinoology.hms.staff.service;
 
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.staff.model.Designation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,4 +16,6 @@ public interface DesignationService {
                                         Designation designation);
     ResponseEntity<?> editDesignation(HttpServletRequest request, HttpServletResponse response,
                                       Designation designation);
+    ResponseEntity<?> getAllDesignations(HttpServletRequest request, HttpServletResponse response,
+                                         GeneralPaginationDataRequest paginationRequest);
 }

@@ -57,4 +57,10 @@ public class StaffController {
                                         @RequestBody Designation designation) {
         return designationService.editDesignation(request, response, designation);
     }
+
+    @PostMapping("/designation/get-all")
+    ResponseEntity<?> getAlLDesignations(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestBody GeneralPaginationDataRequest paginationRequest) {
+        return designationService.getAllDesignations(request, response, paginationRequest);
+    }
 }
