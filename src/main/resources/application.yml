@@ -35,5 +35,5 @@ app:
   user:
     initial-password: User@123
     reset-mail-active: false
-
-
+  patient:
+    alerts: false
