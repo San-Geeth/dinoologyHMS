@@ -37,3 +37,4 @@ app:
     reset-mail-active: false
   patient:
     alerts: false
+    transfering: false
