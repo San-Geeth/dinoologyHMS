@@ -38,3 +38,4 @@ app:
   patient:
     alerts: false
     transfering: false
+    dirty: true
