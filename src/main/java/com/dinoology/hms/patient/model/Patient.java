@@ -32,11 +32,6 @@ public class Patient {
     private String lastName;
     private String nic;
     private String contact;
-    private String email;
-    private String address;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
     @Enumerated(EnumType.STRING)
     private Title title;
 
