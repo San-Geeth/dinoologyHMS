@@ -35,8 +35,4 @@ public class Visit {
     */
     private String attendingDoctor;
     private String visitNotes;
-
-    @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
-    private GeneralService service;
 }

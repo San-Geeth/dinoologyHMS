@@ -2,6 +2,8 @@ package com.dinoology.hms.patient.model;
 
 import com.dinoology.hms.common_utility.enums.Gender;
 import com.dinoology.hms.common_utility.enums.Title;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,18 +27,12 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String pid;
     private String firstName;
     private String lastName;
     private String nic;
     private String contact;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     @Enumerated(EnumType.STRING)
     private Title title;
-    private LocalDate dob;
-    private Integer age;
-    private Boolean isActive = true;
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 }
