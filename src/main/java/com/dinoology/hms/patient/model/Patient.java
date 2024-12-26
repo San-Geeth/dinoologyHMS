@@ -32,6 +32,7 @@ public class Patient {
     private String lastName;
     private String nic;
     private String contact;
+    private String gender;
     @Enumerated(EnumType.STRING)
     private Title title;
 
