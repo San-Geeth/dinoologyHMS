@@ -29,6 +29,8 @@ public class Patient {
     private String firstName;
     private String lastName;
     private String nic;
+    private String contact;
+    private String gender;
     @Enumerated(EnumType.STRING)
     private Title title;
     private LocalDate dob;
