@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  * Date:2024 12/26/2024
  * Copyright © 2024 DinooLogy
  */
+@Entity
 @Table(name = "visit")
 @Data
 @AllArgsConstructor
