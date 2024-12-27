@@ -30,8 +30,13 @@ server:
     context-path: /api/v1
 
 app:
+  general:
+    reference-prefex: KAN
+    country-code: 94
   staff:
     id-prefix: EL
   user:
     initial-password: User@123
     reset-mail-active: false
+  patient:
+    id-prefix: PAT
