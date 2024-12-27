@@ -6,15 +6,21 @@ import com.dinoology.hms.service.constants.GeneralServiceResponseMessageConstant
 import com.dinoology.hms.service.repository.GeneralServiceRepository;
 import com.dinoology.hms.service.service.GeneralServiceService;
 import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.staff.model.Designation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /*
@@ -111,7 +117,29 @@ public class GeneralServiceServiceImpl implements GeneralServiceService {
     }
 
     @Override
-    public ResponseEntity<?> getAllGeneralServices(HttpServletRequest request, HttpServletResponse response, GeneralPaginationDataRequest paginationRequest) {
-        return null;
+    public ResponseEntity<?> getAllGeneralServices(HttpServletRequest request, HttpServletResponse response,
+                                                   GeneralPaginationDataRequest paginationRequest) {
+        logger.info("Request URI: {}", request.getRequestURI());
+        try {
+            Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize());
+            Page<GeneralService> generalServicePage = generalServiceRepository.findAll(pageable);
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("services", generalServicePage.getContent());
+            responseBody.put("currentPage", generalServicePage.getNumber());
+            responseBody.put("totalItems", generalServicePage.getTotalElements());
+            responseBody.put("totalPages", generalServicePage.getTotalPages());
+
+            return ResponseEntity.ok().body(new ResponseWrapper<>()
+                    .responseOk(responseBody));
+        } catch (DataAccessException e) {
+            logger.error("Database error while getting all general services: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("Database error occurred"));
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper<>().responseFail("An unexpected error occurred"));
+        }
     }
 }
