@@ -37,7 +37,7 @@ public class GeneralServiceServiceImpl implements GeneralServiceService {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
             String normalizedKey = generalService.getServiceKey().toLowerCase().replace(" ", "_");
-            generalService.setService(normalizedKey);
+            generalService.setServiceKey(normalizedKey);
 
             if (generalServiceRepository.existsByServiceKey(generalService.getServiceKey())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -68,12 +68,6 @@ public class GeneralServiceServiceImpl implements GeneralServiceService {
             String normalizedKey = generalService.getServiceKey().toLowerCase().replace(" ", "_");
             generalService.setServiceKey(normalizedKey);
 
-            if (generalServiceRepository.existsByServiceKey(generalService.getServiceKey())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseWrapper<>()
-                                .responseFail(GeneralServiceResponseMessageConstants.SERVICE_ALREADY_EXISTS));
-            }
-
             Optional<GeneralService> existingGeneralServiceOptional = generalServiceRepository.findById(generalService.getId());
 
             if (existingGeneralServiceOptional.isEmpty()) {
@@ -83,9 +77,17 @@ public class GeneralServiceServiceImpl implements GeneralServiceService {
 
             GeneralService existingGeneralService = existingGeneralServiceOptional.get();
 
+
+
             if (generalService.getServiceKey() != null && !generalService.getServiceKey().equals(existingGeneralService
                     .getServiceKey())) {
-                existingGeneralService.setServiceKey(generalService.getServiceKey());
+                if (generalServiceRepository.existsByServiceKey(generalService.getServiceKey())) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(new ResponseWrapper<>()
+                                    .responseFail(GeneralServiceResponseMessageConstants.SERVICE_ALREADY_EXISTS));
+                } else  {
+                    existingGeneralService.setServiceKey(generalService.getServiceKey());
+                }
             }
             if(generalService.getService() != null && !generalService.getService()
                     .equals(existingGeneralService.getService())) {

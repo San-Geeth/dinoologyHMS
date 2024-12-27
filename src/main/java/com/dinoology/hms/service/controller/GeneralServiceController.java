@@ -30,4 +30,10 @@ public class GeneralServiceController {
                                      @RequestBody GeneralService generalService) {
         return generalServiceService.addNewService(request, response, generalService);
     }
+
+    @PostMapping("/update")
+    ResponseEntity<?> updateGeneralService(HttpServletRequest request, HttpServletResponse response,
+                                           @RequestBody GeneralService generalService) {
+        return generalServiceService.editGeneralService(request, response, generalService);
+    }
 }
