@@ -27,26 +27,20 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    private String pid;
     private String firstName;
     private String lastName;
     private String nic;
-    private String contact;
+    private Long contact;
     private String email;
     private String address;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
     @Enumerated(EnumType.STRING)
     private Title title;
-
     private LocalDate dob;
     private Integer age;
-    private String medicalRecordNumber;
-    private LocalDateTime registrationDate;
-    private LocalDateTime lastVisitDate;
-    private Boolean isActive;
+    private Boolean isActive = true;
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
