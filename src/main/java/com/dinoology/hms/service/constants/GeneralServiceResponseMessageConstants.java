@@ -8,4 +8,6 @@ package com.dinoology.hms.service.constants;
 public class GeneralServiceResponseMessageConstants {
     public static final String SERVICE_ALREADY_EXISTS = "Service already exists!";
     public static final String SERVICE_ADDED_SUCCESSFULLY = "Service added successfully!";
+    public static final String SERVICE_NOT_FOUND = "Service not found!";
+    public static final String SERVICE_UPDATED_SUCCESSFULLY = "Service updated successfully!";
 }

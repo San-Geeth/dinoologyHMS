@@ -72,7 +72,7 @@ public class DesignationServiceImpl implements DesignationService {
     public ResponseEntity<?> editDesignation(HttpServletRequest request, HttpServletResponse response, Designation designation) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
-            String normalizedKey = designation.getDesignationKey().toLowerCase().replace(" ", "_");;
+            String normalizedKey = designation.getDesignationKey().toLowerCase().replace(" ", "_");
             designation.setDesignationKey(normalizedKey);
 
             if (designationRepository.existsByDesignationKey(designation.getDesignationKey())) {
