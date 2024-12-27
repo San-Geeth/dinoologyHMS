@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 
 /*
@@ -49,6 +51,14 @@ public class PatientServiceImpl implements PatientService {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new ResponseWrapper<>().responseFail(PatientResponseMessageConstants
                                 .PATIENT_ALREADY_REGISTERED));
+            }
+            if (patient.getDob() != null) {
+                LocalDate dob = patient.getDob();
+                LocalDate currentDate = LocalDate.now();
+                int age = Period.between(dob, currentDate).getYears();
+                patient.setAge(age);
+            } else if (patient.getAge() != null) {
+                patient.setAge(patient.getAge());
             }
 
             Patient newPatient = patientRepository.save(patient);
