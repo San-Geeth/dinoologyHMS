@@ -35,4 +35,8 @@ public class Visit {
     */
     private String attendingDoctor;
     private String visitNotes;
+    /*TODO: Create separate service for services
+     *  that can add services as hospital need
+     */
+    private String service;
 }
