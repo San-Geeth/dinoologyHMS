@@ -72,14 +72,8 @@ public class DesignationServiceImpl implements DesignationService {
     public ResponseEntity<?> editDesignation(HttpServletRequest request, HttpServletResponse response, Designation designation) {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
-            String normalizedKey = designation.getDesignationKey().toLowerCase().replace(" ", "_");;
+            String normalizedKey = designation.getDesignationKey().toLowerCase().replace(" ", "_");
             designation.setDesignationKey(normalizedKey);
-
-            if (designationRepository.existsByDesignationKey(designation.getDesignationKey())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseWrapper<>()
-                                .responseFail(StaffResponseMessageConstants.DESIGNATION_ALREADY_EXISTS));
-            }
 
             Optional<Designation> existingDesignationOptional = designationRepository.findById(designation.getId());
 
@@ -92,7 +86,13 @@ public class DesignationServiceImpl implements DesignationService {
 
             if (designation.getDesignationKey() != null && !designation.getDesignationKey().equals(existingDesignation
                     .getDesignationKey())) {
-                existingDesignation.setDesignationKey(designation.getDesignationKey());
+                if (designationRepository.existsByDesignationKey(designation.getDesignationKey())) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(new ResponseWrapper<>()
+                                    .responseFail(StaffResponseMessageConstants.DESIGNATION_ALREADY_EXISTS));
+                } else  {
+                    existingDesignation.setDesignationKey(designation.getDesignationKey());
+                }
             }
             if(designation.getDesignation() != null && !designation.getDesignation()
                     .equals(existingDesignation.getDesignation())) {

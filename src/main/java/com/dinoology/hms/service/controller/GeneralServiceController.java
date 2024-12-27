@@ -1,5 +1,6 @@
 package com.dinoology.hms.service.controller;
 
+import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.service.model.GeneralService;
 import com.dinoology.hms.service.service.GeneralServiceService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,5 +30,17 @@ public class GeneralServiceController {
     ResponseEntity<?> addnewGeneralService(HttpServletRequest request, HttpServletResponse response,
                                      @RequestBody GeneralService generalService) {
         return generalServiceService.addNewService(request, response, generalService);
+    }
+
+    @PostMapping("/update")
+    ResponseEntity<?> updateGeneralService(HttpServletRequest request, HttpServletResponse response,
+                                           @RequestBody GeneralService generalService) {
+        return generalServiceService.editGeneralService(request, response, generalService);
+    }
+
+    @PostMapping("/get-all")
+    ResponseEntity<?> getAllGeneralServices(HttpServletRequest request, HttpServletResponse response,
+                                            @RequestBody GeneralPaginationDataRequest generalPaginationDataRequest) {
+        return generalServiceService.getAllGeneralServices(request, response, generalPaginationDataRequest);
     }
 }
