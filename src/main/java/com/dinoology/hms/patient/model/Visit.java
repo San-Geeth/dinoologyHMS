@@ -6,10 +6,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /*
  * Created by: sangeethnawa
@@ -29,8 +25,6 @@ public class Visit {
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-    @CreatedDate
-    private LocalDate visitDate;
     private String reasonForVisit;
     /*TODO: Break Doctor from staff and treat separately.
     *  Make attendingDoctor data type to Doctor

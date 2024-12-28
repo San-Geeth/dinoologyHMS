@@ -3,6 +3,7 @@ package com.dinoology.hms.patient.model;
 import com.dinoology.hms.common_utility.enums.Gender;
 import com.dinoology.hms.common_utility.enums.Platform;
 import com.dinoology.hms.common_utility.enums.Title;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "patient")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = { "visit" }, allowSetters = true)
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

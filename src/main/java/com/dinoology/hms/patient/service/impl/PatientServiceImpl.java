@@ -9,6 +9,8 @@ import com.dinoology.hms.patient.model.Visit;
 import com.dinoology.hms.patient.repository.PatientRepository;
 import com.dinoology.hms.patient.repository.VisitRepository;
 import com.dinoology.hms.patient.service.PatientService;
+import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.service.repository.GeneralServiceRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -33,13 +35,15 @@ public class PatientServiceImpl implements PatientService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PatientRepository patientRepository;
     private final VisitRepository visitRepository;
+    private final GeneralServiceRepository generalServiceRepository;
 
     @Value("${app.patient.id-prefix}")
     private String pidPrefix;
 
-    public PatientServiceImpl(PatientRepository patientRepository, VisitRepository visitRepository) {
+    public PatientServiceImpl(PatientRepository patientRepository, VisitRepository visitRepository, GeneralServiceRepository generalServiceRepository) {
         this.patientRepository = patientRepository;
         this.visitRepository = visitRepository;
+        this.generalServiceRepository = generalServiceRepository;
     }
 
     @Override
@@ -67,10 +71,10 @@ public class PatientServiceImpl implements PatientService {
             newPatient.setPid(generatePATID(newPatient.getId()));
             Patient savedPatient = patientRepository.save(newPatient);
 
-            //TODO: Initiate first visit
             if(patient.getPlatform().equals(Platform.PREMISES) && patient.getVisit() != null) {
                 initiateFirstVisit(savedPatient, patient.getVisit());
             }
+
             return ResponseEntity.ok().body(new ResponseWrapper<>()
                     .responseOk(PatientResponseMessageConstants.PATIENT_ADDED_SUCCESSFULLY, savedPatient));
 
@@ -93,7 +97,14 @@ public class PatientServiceImpl implements PatientService {
         logger.info("Started first visit initiation.....");
         try {
             visit.setPatient(patient);
+            if(visit.getServiceId() != null) {
+                GeneralService generalService = generalServiceRepository.findByGeneralServiceId(visit.getServiceId());
+                if(generalService != null) {
+                    visit.setService(generalService);
+                }
+            }
             visitRepository.save(visit);
+            logger.info("First visit initiation completed!");
         } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage(), e);
             throw e;
