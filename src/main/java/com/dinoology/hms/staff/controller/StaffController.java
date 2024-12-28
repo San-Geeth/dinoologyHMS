@@ -2,8 +2,10 @@ package com.dinoology.hms.staff.controller;
 
 import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.staff.model.Designation;
+import com.dinoology.hms.staff.model.Doctor;
 import com.dinoology.hms.staff.model.StaffMember;
 import com.dinoology.hms.staff.service.DesignationService;
+import com.dinoology.hms.staff.service.DoctorService;
 import com.dinoology.hms.staff.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,10 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class StaffController {
     private final StaffService staffService;
     private final DesignationService designationService;
+    private final DoctorService doctorService;
 
-    public StaffController(StaffService staffService, DesignationService designationService) {
+    public StaffController(StaffService staffService, DesignationService designationService, DoctorService doctorService) {
         this.staffService = staffService;
         this.designationService = designationService;
+        this.doctorService = doctorService;
     }
 
     @PostMapping("/member/add")
@@ -62,5 +66,11 @@ public class StaffController {
     ResponseEntity<?> getAlLDesignations(HttpServletRequest request, HttpServletResponse response,
                                          @RequestBody GeneralPaginationDataRequest paginationRequest) {
         return designationService.getAllDesignations(request, response, paginationRequest);
+    }
+
+    @PostMapping("/doctor/add")
+    ResponseEntity<?> addNewDoctor(HttpServletRequest request, HttpServletResponse response,
+                                   @RequestBody Doctor doctor) {
+        return doctorService.addNewDoctor(request, response, doctor);
     }
 }
