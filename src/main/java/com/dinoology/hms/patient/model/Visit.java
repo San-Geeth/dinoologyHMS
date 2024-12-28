@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /*
@@ -14,30 +16,29 @@ import java.time.LocalDateTime;
  * Date:2024 12/26/2024
  * Copyright © 2024 DinooLogy
  */
-@Entity
 @Table(name = "visit")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Entity
 public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
-    private LocalDateTime visitDate;
+    @CreatedDate
+    private LocalDate visitDate;
     private String reasonForVisit;
     /*TODO: Break Doctor from staff and treat separately.
     *  Make attendingDoctor data type to Doctor
     */
     private String attendingDoctor;
     private String visitNotes;
-    /*TODO: Create separate service for services
-     *  that can add services as hospital need
-     */
-    private String service;
+
+    @ManyToOne
+    @JoinColumn(name = "service_id", nullable = false)
+    private GeneralService service;
 }
