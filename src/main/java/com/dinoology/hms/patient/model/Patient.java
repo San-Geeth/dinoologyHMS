@@ -41,6 +41,8 @@ public class Patient {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private Title title;
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
     private LocalDate dob;
     private Integer age;
     private Boolean isActive = true;

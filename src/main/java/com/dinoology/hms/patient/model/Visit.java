@@ -27,12 +27,13 @@ public class Visit {
     private Patient patient;
     private String reasonForVisit;
     /*TODO: Break Doctor from staff and treat separately.
-    *  Make attendingDoctor data type to Doctor
-    */
+     *  Make attendingDoctor data type to Doctor
+     */
     private String attendingDoctor;
     private String visitNotes;
-
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
     private GeneralService service;
+    @Transient
+    private Integer serviceId;
 }
