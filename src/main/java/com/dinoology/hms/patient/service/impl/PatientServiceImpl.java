@@ -1,14 +1,16 @@
 package com.dinoology.hms.patient.service.impl;
 
+import com.dinoology.hms.common_utility.enums.Platform;
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
 import com.dinoology.hms.common_utility.support.SupportMethods;
 import com.dinoology.hms.patient.constants.PatientResponseMessageConstants;
 import com.dinoology.hms.patient.model.Patient;
+import com.dinoology.hms.patient.model.Visit;
 import com.dinoology.hms.patient.repository.PatientRepository;
+import com.dinoology.hms.patient.repository.VisitRepository;
 import com.dinoology.hms.patient.service.PatientService;
-import com.dinoology.hms.staff.constants.StaffResponseMessageConstants;
-import com.dinoology.hms.staff.model.Designation;
-import com.dinoology.hms.staff.model.StaffMember;
+import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.service.repository.GeneralServiceRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Optional;
 
 /*
  * Created by: sangeethnawa
@@ -33,12 +34,16 @@ public class PatientServiceImpl implements PatientService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PatientRepository patientRepository;
+    private final VisitRepository visitRepository;
+    private final GeneralServiceRepository generalServiceRepository;
 
     @Value("${app.patient.id-prefix}")
     private String pidPrefix;
 
-    public PatientServiceImpl(PatientRepository patientRepository) {
+    public PatientServiceImpl(PatientRepository patientRepository, VisitRepository visitRepository, GeneralServiceRepository generalServiceRepository) {
         this.patientRepository = patientRepository;
+        this.visitRepository = visitRepository;
+        this.generalServiceRepository = generalServiceRepository;
     }
 
     @Override
@@ -66,7 +71,10 @@ public class PatientServiceImpl implements PatientService {
             newPatient.setPid(generatePATID(newPatient.getId()));
             Patient savedPatient = patientRepository.save(newPatient);
 
-            //TODO: Initiate first visit
+            if(patient.getPlatform().equals(Platform.PREMISES) && patient.getVisit() != null) {
+                initiateFirstVisit(savedPatient, patient.getVisit());
+            }
+
             return ResponseEntity.ok().body(new ResponseWrapper<>()
                     .responseOk(PatientResponseMessageConstants.PATIENT_ADDED_SUCCESSFULLY, savedPatient));
 
@@ -83,6 +91,24 @@ public class PatientServiceImpl implements PatientService {
 
     private String generatePATID(Integer id) {
         return pidPrefix + SupportMethods.formatTo10Digit(id);
+    }
+
+    private void initiateFirstVisit(Patient patient, Visit visit) {
+        logger.info("Started first visit initiation.....");
+        try {
+            visit.setPatient(patient);
+            if(visit.getServiceId() != null) {
+                GeneralService generalService = generalServiceRepository.findByGeneralServiceId(visit.getServiceId());
+                if(generalService != null) {
+                    visit.setService(generalService);
+                }
+            }
+            visitRepository.save(visit);
+            logger.info("First visit initiation completed!");
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
 }
