@@ -26,6 +26,6 @@ public class PatientController {
 
     @PostMapping("/add")
     ResponseEntity<?> addNewPatient(HttpServletRequest request, HttpServletResponse response, @RequestBody Patient patient) {
-        return patientService.addNewPatient(request,response,patient);
+        return patientService.addNewPatient(request,response, patient);
     }
 }
