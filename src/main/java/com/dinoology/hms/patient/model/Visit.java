@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /*
  * Created by: sangeethnawa
  * Date:2024 12/26/2024
@@ -19,24 +17,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Entity
 public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
-    private LocalDateTime visitDate;
     private String reasonForVisit;
     /*TODO: Break Doctor from staff and treat separately.
-    *  Make attendingDoctor data type to Doctor
-    */
+     *  Make attendingDoctor data type to Doctor
+     */
     private String attendingDoctor;
     private String visitNotes;
-
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
     private GeneralService service;
+    @Transient
+    private Integer serviceId;
 }

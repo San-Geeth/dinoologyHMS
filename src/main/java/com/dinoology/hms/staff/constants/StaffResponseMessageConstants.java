@@ -17,4 +17,8 @@ public class StaffResponseMessageConstants {
     public static final String DESIGNATION_ADDED_SUCCESSFULLY = "Designation Added Successfully!";
     public static final String DESIGNATION_NOT_FOUND = "Designation Not Found!";
     public static final String DESIGNATION_UPDATED_SUCCESSFULLY = "Designation Updated Successfully!";
+
+    //Doctor
+    public static final String DOCTOR_ALREADY_EXISTS = "Doctor Already Exists!";
+    public static final String DOCTOR_ADDED_SUCCESSFULLY = "Doctor Added Successfully!";
 }
