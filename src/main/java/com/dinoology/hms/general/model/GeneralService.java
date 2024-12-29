@@ -1,4 +1,4 @@
-package com.dinoology.hms.service.model;
+package com.dinoology.hms.general.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

@@ -1,8 +1,7 @@
-package com.dinoology.hms.service.service;
+package com.dinoology.hms.general.service;
 
 import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
-import com.dinoology.hms.service.model.GeneralService;
-import com.dinoology.hms.staff.model.Designation;
+import com.dinoology.hms.general.model.GeneralService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;

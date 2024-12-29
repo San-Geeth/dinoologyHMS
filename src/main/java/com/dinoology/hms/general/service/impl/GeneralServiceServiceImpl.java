@@ -1,12 +1,11 @@
-package com.dinoology.hms.service.service.impl;
+package com.dinoology.hms.general.service.impl;
 
 import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
 import com.dinoology.hms.common_utility.response.ResponseWrapper;
-import com.dinoology.hms.service.constants.GeneralServiceResponseMessageConstants;
-import com.dinoology.hms.service.repository.GeneralServiceRepository;
-import com.dinoology.hms.service.service.GeneralServiceService;
-import com.dinoology.hms.service.model.GeneralService;
-import com.dinoology.hms.staff.model.Designation;
+import com.dinoology.hms.general.constants.GeneralServiceResponseMessageConstants;
+import com.dinoology.hms.general.repository.GeneralServiceRepository;
+import com.dinoology.hms.general.service.GeneralServiceService;
+import com.dinoology.hms.general.model.GeneralService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
