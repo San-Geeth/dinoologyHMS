@@ -1,5 +1,6 @@
 package com.dinoology.hms.patient.service;
 
+import com.dinoology.hms.patient.dto.request.PatientDTO;
 import com.dinoology.hms.patient.model.Patient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,5 +12,5 @@ import org.springframework.http.ResponseEntity;
  * Copyright © 2024 DinooLogy
  */
 public interface PatientService {
-    ResponseEntity<?> addNewPatient(HttpServletRequest request, HttpServletResponse response, Patient patient);
+    ResponseEntity<?> addNewPatient(HttpServletRequest request, HttpServletResponse response, PatientDTO patient);
 }

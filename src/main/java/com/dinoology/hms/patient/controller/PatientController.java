@@ -1,5 +1,6 @@
 package com.dinoology.hms.patient.controller;
 
+import com.dinoology.hms.patient.dto.request.PatientDTO;
 import com.dinoology.hms.patient.model.Patient;
 import com.dinoology.hms.patient.service.PatientService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class PatientController {
     }
 
     @PostMapping("/add")
-    ResponseEntity<?> addNewPatient(HttpServletRequest request, HttpServletResponse response, @RequestBody Patient patient) {
-        return patientService.addNewPatient(request,response, patient);
+    ResponseEntity<?> addNewPatient(HttpServletRequest request, HttpServletResponse response, @RequestBody PatientDTO patientDTO) {
+        return patientService.addNewPatient(request,response, patientDTO);
     }
 }
