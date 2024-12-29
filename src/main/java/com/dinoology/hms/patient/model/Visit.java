@@ -34,6 +34,4 @@ public class Visit {
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
     private GeneralService service;
-    @Transient
-    private Integer serviceId;
 }
