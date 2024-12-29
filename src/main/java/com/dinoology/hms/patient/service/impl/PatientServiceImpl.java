@@ -13,6 +13,8 @@ import com.dinoology.hms.patient.repository.VisitRepository;
 import com.dinoology.hms.patient.service.PatientService;
 import com.dinoology.hms.service.model.GeneralService;
 import com.dinoology.hms.service.repository.GeneralServiceRepository;
+import com.dinoology.hms.staff.model.Doctor;
+import com.dinoology.hms.staff.repository.DoctorRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -41,15 +43,17 @@ public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
     private final VisitRepository visitRepository;
     private final GeneralServiceRepository generalServiceRepository;
+    private final DoctorRepository doctorRepository;
     private final ModelMapper modelMapper;
 
     @Value("${app.patient.id-prefix}")
     private String pidPrefix;
 
-    public PatientServiceImpl(PatientRepository patientRepository, VisitRepository visitRepository, GeneralServiceRepository generalServiceRepository, ModelMapper modelMapper) {
+    public PatientServiceImpl(PatientRepository patientRepository, VisitRepository visitRepository, GeneralServiceRepository generalServiceRepository, DoctorRepository doctorRepository, ModelMapper modelMapper) {
         this.patientRepository = patientRepository;
         this.visitRepository = visitRepository;
         this.generalServiceRepository = generalServiceRepository;
+        this.doctorRepository = doctorRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -58,7 +62,6 @@ public class PatientServiceImpl implements PatientService {
         logger.info("Request URI: {}", request.getRequestURI());
         try {
             Patient patient = modelMapper.map(patientDTO, Patient.class);
-            System.out.println(patient);
             patient.setContact(SupportMethods.formatContact(patient.getContact()));
 
             if (patientRepository.existsByContact(patient.getContact())) {
@@ -87,17 +90,22 @@ public class PatientServiceImpl implements PatientService {
                 * Visit both contain "id," ModelMapper maps them incorrectly.
                 * No Explicit Mapping: Without explicit mappings to guide ModelMapper, it assumes
                 * the properties are related because of their partial name match.
-                */
-                modelMapper.typeMap(VisitDTO.class, Visit.class).addMappings(mapper -> {
+                * If such cases, use below way
+                * modelMapper.typeMap(VisitDTO.class, Visit.class).addMappings(mapper -> {
                     mapper.skip(Visit::setId);
-                });
+                    });
+                */
                 Visit visit = modelMapper.map(patientDTO.getVisit(), Visit.class);
                 GeneralService generalService = generalServiceRepository
                         .findByGeneralServiceId(
                                 patientDTO
                                         .getVisit()
-                                        .getServiceId()
+                                        .getService_id()
                         );
+                Doctor doctor = doctorRepository.findDoctorByPK(patientDTO.getVisit().getDoc_id());
+                if(doctor != null) {
+                    visit.setAttendingDoctor(doctor);
+                }
                 if(visit != null && generalService != null) {
                     initiateFirstVisit(savedPatient, visit, generalService);
                 }

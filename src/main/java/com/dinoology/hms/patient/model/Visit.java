@@ -1,6 +1,7 @@
 package com.dinoology.hms.patient.model;
 
 import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.staff.model.Doctor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,10 +27,9 @@ public class Visit {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
     private String reasonForVisit;
-    /*TODO: Break Doctor from staff and treat separately.
-     *  Make attendingDoctor data type to Doctor
-     */
-    private String attendingDoctor;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    private Doctor attendingDoctor;
     private String visitNotes;
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)

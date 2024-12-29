@@ -14,5 +14,6 @@ import lombok.Data;
 public class VisitDTO {
     private String reasonForVisit;
     private String visitNotes;
-    private Integer serviceId;
+    private Integer service_id;
+    private Integer doc_id;
 }
