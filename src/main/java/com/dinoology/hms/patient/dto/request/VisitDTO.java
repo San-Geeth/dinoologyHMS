@@ -1,8 +1,5 @@
 package com.dinoology.hms.patient.dto.request;
 
-import com.dinoology.hms.patient.model.Patient;
-import com.dinoology.hms.service.model.GeneralService;
-import jakarta.persistence.*;
 import lombok.Data;
 
 /*

@@ -1,6 +1,7 @@
 package com.dinoology.hms.staff.controller;
 
 import com.dinoology.hms.common_utility.dto.request.GeneralPaginationDataRequest;
+import com.dinoology.hms.staff.dto.request.DoctorDTO;
 import com.dinoology.hms.staff.model.Designation;
 import com.dinoology.hms.staff.model.Doctor;
 import com.dinoology.hms.staff.model.StaffMember;
@@ -70,7 +71,7 @@ public class StaffController {
 
     @PostMapping("/doctor/add")
     ResponseEntity<?> addNewDoctor(HttpServletRequest request, HttpServletResponse response,
-                                   @RequestBody Doctor doctor) {
-        return doctorService.addNewDoctor(request, response, doctor);
+                                   @RequestBody DoctorDTO doctorDTO) {
+        return doctorService.addNewDoctor(request, response, doctorDTO);
     }
 }

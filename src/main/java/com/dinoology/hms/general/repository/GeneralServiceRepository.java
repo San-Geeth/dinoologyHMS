@@ -1,6 +1,6 @@
-package com.dinoology.hms.service.repository;
+package com.dinoology.hms.general.repository;
 
-import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.general.model.GeneralService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

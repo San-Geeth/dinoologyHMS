@@ -2,6 +2,7 @@ package com.dinoology.hms.staff.model;
 
 import com.dinoology.hms.common_utility.enums.Gender;
 import com.dinoology.hms.common_utility.enums.MaritalStatus;
+import com.dinoology.hms.general.model.DoctorSpecialization;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,8 +32,8 @@ public class Doctor {
     private String appointedHospital;
     private String nic;
     private String email;
-    private String primaryContact;
-    private String secondaryContact;
+    private Long primaryContact;
+    private Long secondaryContact;
     private String address;
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -44,6 +45,9 @@ public class Doctor {
     private String emergencyName;
     private Boolean activeStatus = true;
     private String imgURL;
+    @ManyToOne
+    @JoinColumn(name = "specialization_id", referencedColumnName = "id")
+    private DoctorSpecialization doctorSpecialization;
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

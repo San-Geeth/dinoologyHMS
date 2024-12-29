@@ -1,6 +1,6 @@
 package com.dinoology.hms.patient.model;
 
-import com.dinoology.hms.service.model.GeneralService;
+import com.dinoology.hms.general.model.GeneralService;
 import com.dinoology.hms.staff.model.Doctor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

@@ -1,5 +1,6 @@
 package com.dinoology.hms.staff.service;
 
+import com.dinoology.hms.staff.dto.request.DoctorDTO;
 import com.dinoology.hms.staff.model.Doctor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,5 +12,5 @@ import org.springframework.http.ResponseEntity;
  * Copyright © 2024 DinooLogy
  */
 public interface DoctorService {
-    ResponseEntity<?> addNewDoctor(HttpServletRequest request, HttpServletResponse response, Doctor doctor);
+    ResponseEntity<?> addNewDoctor(HttpServletRequest request, HttpServletResponse response, DoctorDTO doctor);
 }
